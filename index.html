@@ -3,137 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Calendar</title>
+    <title>Passport Application</title>
     <style>
         body {
             font-family: sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
+            margin: 20px;
         }
 
-        .calendar {
-            border: 1px solid #ccc;
-            padding: 20px;
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="date"],
+        select {
             width: 300px;
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        .calendar-weekdays, .calendar-days {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-        }
-
-        .calendar-weekdays div {
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .calendar-days div {
-            text-align: center;
             padding: 8px;
-            border: 1px solid #eee;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
         }
 
-        .calendar-days div.active {
-            background-color: #007bff;
-            color: white;
+        button:hover {
+            background-color: #45a049;
         }
+        #error-message{
+            color: red;
+        }
+
     </style>
 </head>
 <body>
-    <div class="calendar">
-        <div class="calendar-header">
-            <button id="prevMonth">&lt;</button>
-            <h2 id="currentMonthYear"></h2>
-            <button id="nextMonth">&gt;</button>
+
+    <h2>Passport Application</h2>
+
+    <form id="passportForm">
+        <div class="form-group">
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" name="firstName" required>
         </div>
-        <div class="calendar-weekdays">
-            <div>Sun</div>
-            <div>Mon</div>
-            <div>Tue</div>
-            <div>Wed</div>
-            <div>Thu</div>
-            <div>Fri</div>
-            <div>Sat</div>
+
+        <div class="form-group">
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" name="lastName" required>
         </div>
-        <div class="calendar-days"></div>
-    </div>
+
+        <div class="form-group">
+            <label for="dob">Date of Birth:</label>
+            <input type="date" id="dob" name="dob" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="nationality">Nationality:</label>
+            <select id="nationality" name="nationality" required>
+                <option value="">Select Nationality</option>
+                <option value="US">United States</option>
+                <option value="CA">Canada</option>
+                <option value="GB">United Kingdom</option>
+                <option value="IN">India</option>
+                </select>
+        </div>
+        <div class="form-group">
+            <label for="address">Address:</label>
+            <input type="text" id="address" name="address" required>
+        </div>
+
+        <button type="submit">Submit Application</button>
+        <p id="error-message"></p>
+
+    </form>
 
     <script>
-        const currentMonthYear = document.getElementById('currentMonthYear');
-        const prevMonthButton = document.getElementById('prevMonth');
-        const nextMonthButton = document.getElementById('nextMonth');
-        const calendarDays = document.querySelector('.calendar-days');
+        document.getElementById('passportForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
 
-        let currentDate = new Date();
-        let currentMonth = currentDate.getMonth();
-        let currentYear = currentDate.getFullYear();
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const dob = document.getElementById('dob').value;
+            const email = document.getElementById('email').value;
+            const nationality = document.getElementById('nationality').value;
+            const address = document.getElementById('address').value;
 
-        function generateCalendar(month, year) {
-            currentMonthYear.textContent = new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' });
-            calendarDays.innerHTML = '';
-
-            const firstDayOfMonth = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const daysInPrevMonth = new Date(year, month, 0).getDate();
-
-            let days = [];
-
-            for (let i = firstDayOfMonth; i > 0; i--) {
-                days.push(`<div class="prev-month-day">${daysInPrevMonth - i + 1}</div>`);
+            // Basic validation (you can add more robust validation)
+            if (!firstName || !lastName || !dob || !email || !nationality || !address) {
+                document.getElementById('error-message').textContent = "Please fill in all fields.";
+                return;
             }
-
-            for (let i = 1; i <= daysInMonth; i++) {
-                const isActive = (i === currentDate.getDate() && month === currentDate.getMonth() && year === currentDate.getFullYear()) ? 'active' : '';
-                days.push(`<div class="${isActive}">${i}</div>`);
+            if(!email.includes("@") || !email.includes(".")){
+                document.getElementById('error-message').textContent = "Please enter a valid email address.";
+                return;
             }
+            document.getElementById('error-message').textContent = "";
 
-            const remainingDays = 42 - days.length;
-            for (let i = 1; i <= remainingDays; i++) {
-                days.push(`<div class="next-month-day">${i}</div>`);
-            }
+            // Simulate sending data to a server (replace with actual server-side logic)
+            console.log('Form data:', { firstName, lastName, dob, email, nationality, address });
 
-            calendarDays.innerHTML = days.join('');
-        }
+            // Display a success message or redirect to a confirmation page
+            alert('Application submitted successfully!');
+            document.getElementById('passportForm').reset();
 
-        generateCalendar(currentMonth, currentYear);
-
-        prevMonthButton.addEventListener('click', () => {
-            currentMonth--;
-            if (currentMonth < 0) {
-                currentMonth = 11;
-                currentYear--;
-            }
-            generateCalendar(currentMonth, currentYear);
-        });
-
-        nextMonthButton.addEventListener('click', () => {
-            currentMonth++;
-            if (currentMonth > 11) {
-                currentMonth = 0;
-                currentYear++;
-            }
-            generateCalendar(currentMonth, currentYear);
-        });
-
-        calendarDays.addEventListener("click", (e)=>{
-          if(e.target.tagName === "DIV" && !e.target.classList.contains("prev-month-day") && !e.target.classList.contains("next-month-day")){
-            const allDays = document.querySelectorAll(".calendar-days div");
-            allDays.forEach(day => day.classList.remove("active"));
-            e.target.classList.add("active");
-          }
         });
     </script>
+
 </body>
 </html>
 
